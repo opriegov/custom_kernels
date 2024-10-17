@@ -13,8 +13,8 @@ torch_lib_dir = get_lib_dir()
 habana_modules_directory = "/usr/include/habanalabs"
 pybind_include_path = pybind11.get_include()
 
-setup(name='hpu_custom_searchsorted',
-      ext_modules=[cpp_extension.CppExtension('hpu_custom_searchsorted', ['hpu_custom_searchsorted.cpp'],
+setup(name='hpu_custom_reinterpret',
+        ext_modules=[cpp_extension.CppExtension('hpu_custom_reinterpret', ['hpu_custom_reinterpret.cpp'],
             language='c++', extra_compile_args=["-std=c++17"],
             libraries=['habana_pytorch_plugin'],
             library_dirs=[torch_lib_dir])],
