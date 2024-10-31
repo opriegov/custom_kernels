@@ -14,6 +14,8 @@ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY TH
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************/
 
+
+
 #include "printf_test.hpp"
 #include "batch_norm_f32.hpp"
 #include "cast_gaudi.hpp"
@@ -37,6 +39,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "add_f32_gaudi2.hpp"
 #include "relu_all_gaudi2.hpp"
 #include "user_lut_gaudi2.hpp"
+#include "reinterpret_fwd_i32.hpp"
 
 #include "entry_points.hpp"
 #include <stdio.h>
@@ -141,6 +144,8 @@ tpc_lib_api::GlueCodeReturn GetKernelGuids( _IN_    tpc_lib_api::DeviceId       
            ReluBwdBF16g2Instance.GetKernelName(guids[GAUDI2_KERNEL_RELU_BWD_BF16].name, ReluAllGaudi2::relu_bwd_bf16);
            UserLutGaudi2 userLutInstance;
            userLutInstance.GetKernelName(guids[GAUDI2_KERNEL_USER_LUT].name);
+           ReinterpretFwdI32 ReinterpretFwdI32Instance;
+           ReinterpretFwdI32Instance.GetKernelName(guids[GAUDI2_KERNEL_REINTERPRET_FWD_I32].name);
         }
 
         if (kernelCount != nullptr)
@@ -439,6 +444,13 @@ InstantiateTpcKernel(_IN_  tpc_lib_api::HabanaKernelParams* params,
     if (strcmp(params->guid.name, kernelName) == 0)
     {
         return userLutInstance.GetGcDefinitions(params,instance);
+    }
+
+    ReinterpretFwdI32 ReinterpretFwdI32Instance;
+    ReinterpretFwdI32Instance.GetKernelName(kernelName);
+    if (strcmp(params->guid.name, kernelName) == 0)
+    {
+        return ReinterpretFwdI32Instance.GetGcDefinitions(params,instance);
     }
 
     return tpc_lib_api::GLUE_NODE_NOT_FOUND;
