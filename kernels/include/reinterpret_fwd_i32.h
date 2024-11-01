@@ -11,7 +11,7 @@ void main(const tensor input, tensor output) {
     const int5 index_space_start = get_index_space_offset();
     const int5 index_space_end   = get_index_space_size() + index_space_start;
 
-    const int dim0Step     = 1;
+    const int dim0Step     = 64; // we consume 64 float elements at a time (float64)
     const int dim0Start    = index_space_start[dim0] * dim0Step;
     const int dim0End      = index_space_end[dim0] * dim0Step;
 
@@ -27,7 +27,7 @@ void main(const tensor input, tensor output) {
     const int dim3Start    = index_space_start[dim3] * dim3Step;
     const int dim3End      = index_space_end[dim3] * dim3Step;
 
-    const int dim4Step     = 64; // we consume 64 float elements at a time (float64)
+    const int dim4Step     = 1;
     const int dim4Start    = index_space_start[dim4] * dim4Step;
     const int dim4End      = index_space_end[dim4] * dim4Step;
 

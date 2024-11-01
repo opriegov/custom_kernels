@@ -37,34 +37,34 @@ bool register_custom_reinterpret() {
     return true;
 }
 
-at::Tensor custom_reinterpret_execute(
-    torch::Tensor input_a) {
-  // Registering the custom op, need to be called only once
-  static bool registered = register_custom_reinterpret();
-  TORCH_CHECK(registered, "custom_reinterpret kernel not registered" );
-  std::vector<c10::IValue> inputs{input_a};
-  // Get custom op descriptor from registry
-  auto op_desc = habana::custom_op::HabanaCustomOpDescriptor::getCustomOpDescriptor("custom_op::reinterpret_float");
-  if (op_desc.hasUserParamsFunc()) std::cout << "has user params func\n"; else std::cout << "does not have user params func\n";
-  // Actual call for op execution
-  std::cout << "about to call op_desc.execute()\n";
-  std::vector<at::Tensor> output;
-  try {
-    output = op_desc.execute(inputs);
-    std::cout << "Custom op executed successfully." << std::endl;
-} catch (const std::exception& e) {
-    std::cerr << "Custom op execution failed: " << e.what() << std::endl;
-    // Handle the exception, possibly by rethrowing or returning early
-}
-
-    try {
-    std::cout << output[0] << std::endl;;
+at::Tensor custom_reinterpret_execute(torch::Tensor input_a) 
+{
+    // Registering the custom op, need to be called only once
+    static bool registered = register_custom_reinterpret();
+    TORCH_CHECK(registered, "custom_reinterpret kernel not registered" );
+    std::vector<c10::IValue> inputs{input_a};
     
-    } catch (const std::exception& e) {
-    std::cerr << "Failed to move tensor to CPU or print it: " << e.what() << std::endl;}
-  //std::vector<at::Tensor> output = op_desc.execute(inputs); // XXX TODO The key is to know what is being done here. Is this calling getGcDefinitions etc?
-  // op_desc.execute will always return a vector
-  return output[0];
+    // Get custom op descriptor from registry
+    auto op_desc = habana::custom_op::HabanaCustomOpDescriptor::getCustomOpDescriptor("custom_op::reinterpret_float");
+
+    if (op_desc.hasUserParamsFunc()) 
+       std::cout << "has user params func\n"; else std::cout << "does not have user params func\n";
+
+    // Actual call for op execution
+    std::cout << "about to call op_desc.execute()\n";
+    std::vector<at::Tensor> output;
+    
+    try 
+    {
+       output = op_desc.execute(inputs);
+       std::cout << "Custom op executed successfully." << std::endl;
+    }
+    catch (const std::exception& e) 
+    {
+       std::cerr << "Custom op execution failed: " << e.what() << std::endl;
+       // Handle the exception, possibly by rethrowing or returning early
+    }
+    return output[0];
 }
 
 TORCH_LIBRARY(custom_op, m) {
