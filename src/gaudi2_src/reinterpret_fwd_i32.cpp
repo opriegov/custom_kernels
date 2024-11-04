@@ -41,7 +41,7 @@ tpc_lib_api::GlueCodeReturn ReinterpretFwdI32::GetGcDefinitions(
     memcpy(outputSizes, in_defs->inputTensors[0].geometry.maxSizes, sizeof(outputSizes));
 
     // Round up to elementsInVec and divide by elementsInVec
-    unsigned depthIndex = (outputSizes[0] + (elementsInVec - 1)) / elementsInVec;
+    unsigned depthIndex = (outputSizes[0]) / elementsInVec;
     out_defs->indexSpaceRank = 5;
     out_defs->indexSpaceGeometry[0] = depthIndex;
     out_defs->indexSpaceGeometry[1] = outputSizes[1];
@@ -53,7 +53,6 @@ tpc_lib_api::GlueCodeReturn ReinterpretFwdI32::GetGcDefinitions(
     // The mapping is direct since this kernel does not change the data layout
     for (uint32_t i = 0; i < out_defs->indexSpaceRank; ++i)
     {
-        std::cout << "i was called 3\n";
         out_defs->inputTensorAccessPattern[0].mapping[i].indexSpaceDim = i;
         out_defs->inputTensorAccessPattern[0].mapping[i].a = 1;
         out_defs->inputTensorAccessPattern[0].mapping[i].start_b = 0;

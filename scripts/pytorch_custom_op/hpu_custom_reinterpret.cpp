@@ -17,19 +17,13 @@ bool register_custom_reinterpret() {
     };
 
     habana::custom_op::OutputDesc output_desc{
-        0, c10::ScalarType::Float, output_size_lambda}; // Output dtype will be set in execute function
+        0, c10::ScalarType::Int, output_size_lambda}; // Output dtype will be set in execute function
     std::vector<habana::custom_op::OutputDesc> outputs_desc{
         output_desc};
-    // output desc
-    /*habana::custom_op::OutputDesc output_desc {
-        0, c10::ScalarType::Float // XXX if compute_output_shape_func is nullptr, it is assumed output has the same shape as input (read from hpu_custom_op.h)
-    };
-    std::vector<habana::custom_op::OutputDesc> outputs_desc { output_desc };*/
-
     // acctual register
     REGISTER_CUSTOM_OP_ATTRIBUTES(
         "custom_op::reinterpret_float", //schema name
-        "reinterpret_fwd_i32", // guid XXX I assume this should be exactly the same as kernel name; passing for example 'relu_fwd_f32' works because this is a predefined op
+        "reinterpret_fwd_i32", // guid
         inputs_desc,
         outputs_desc,
         nullptr);
@@ -47,23 +41,10 @@ at::Tensor custom_reinterpret_execute(torch::Tensor input_a)
     // Get custom op descriptor from registry
     auto op_desc = habana::custom_op::HabanaCustomOpDescriptor::getCustomOpDescriptor("custom_op::reinterpret_float");
 
-    if (op_desc.hasUserParamsFunc()) 
-       std::cout << "has user params func\n"; else std::cout << "does not have user params func\n";
 
     // Actual call for op execution
-    std::cout << "about to call op_desc.execute()\n";
-    std::vector<at::Tensor> output;
+    std::vector<at::Tensor> output = op_desc.execute(inputs);
     
-    try 
-    {
-       output = op_desc.execute(inputs);
-       std::cout << "Custom op executed successfully." << std::endl;
-    }
-    catch (const std::exception& e) 
-    {
-       std::cerr << "Custom op execution failed: " << e.what() << std::endl;
-       // Handle the exception, possibly by rethrowing or returning early
-    }
     return output[0];
 }
 
